@@ -1,6 +1,6 @@
 #Zend Framework 3 Skeleton App
 
-Some months ago Zend released finally its third version if their framework. The main problem
+Some months ago Zend released finally the third of Zend framework. The main problem
 of this great powerful framework has been the lack of documentation or organization.
 
 I cloned from the offical Skeleton App and added working Services and Model system.
