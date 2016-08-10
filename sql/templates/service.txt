@@ -1,0 +1,5 @@
+<?php
+namespace %module%\Services;
+class %service_name% extends \Application\Services\BaseService{
+
+}

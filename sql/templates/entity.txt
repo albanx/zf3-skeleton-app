@@ -1,0 +1,15 @@
+<?php
+namespace %module%\Model\Entity;
+use Application\Model\Entity;
+
+class %table% extends Entity
+{
+	const DB_TYPE = '%db_type%';
+	const DB_TABLE = '%db_table%';
+	%fields%
+
+	public function exchangeArray($data)
+	{
+		%exchange%
+	}
+}

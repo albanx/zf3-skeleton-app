@@ -1,0 +1,18 @@
+<?php
+namespace %module%\Model\Repository;
+use Application\Model\BaseTable;
+
+class %table%Table extends BaseTable
+{
+	public function find(%keys_var%)
+	{
+		$rowset = $this->tableGateway->select(array(%keys_var_array%));
+		$row = $rowset->current();
+		return $row;
+	}
+
+	public function delete(%keys_var%)
+	{
+		$this->tableGateway->delete(array(%keys_var_array%));
+	}
+}
