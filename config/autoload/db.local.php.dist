@@ -1,0 +1,23 @@
+<?php
+return [
+    'db_params_root' => [
+        'prefix' => 'yourdb',
+        'username' => 'root',
+        'password' => '',
+        'hostname' => 'localhost',
+        'port' => 3306
+    ],
+    'db_params' => [
+        'prefix' => 'yourdb',
+        'username' => 'root',
+        'password' => '',
+        'hostname' => 'localhost',
+        'port' => 3306
+    ],
+    'service_manager' => array(
+        'factories' => array(
+            'Adapter_main' => '\Application\Factories\AdapterMainFactory',
+            'Adapter_workgroup' => '\Application\Factories\AdapterWorkgroupFactory',
+        )
+    )
+];
