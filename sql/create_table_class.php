@@ -1,7 +1,8 @@
 <?php
 include __DIR__ . '/../vendor/autoload.php';
 
-class ClassCreator {
+class ClassCreator
+{
 
 	private $config;
 	private $arg;

@@ -24,9 +24,9 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => function($sl) {
-                return new IndexController($sl->get('UserService'));
-            }
+//            Controller\IndexController::class => function($sl) {
+//                return new IndexController($sl->get('UserService'));
+//            }
         ],
     ],
     'view_manager' => [

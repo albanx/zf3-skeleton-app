@@ -1,36 +1,55 @@
 <?php
-chdir(__DIR__.'/..');
+use Zend\Mvc\Application;
+use Zend\Stdlib\ArrayUtils;
+use Zend\ServiceManager\ServiceManager;
+
+chdir(dirname(__DIR__));
 
 // Setup autoloading
 include __DIR__ . '/../vendor/autoload.php';
-$db_config  = new Zend\Config\Config(include 'config/autoload/db.local.php');
-$app        = Zend\Mvc\Application::init(require 'config/application.config.php');
+$appConfig = require __DIR__ . '/../config/application.config.php';
+
+if (file_exists(__DIR__ . '/../config/development.config.php')) {
+    $appConfig = ArrayUtils::merge($appConfig, require __DIR__ . '/../config/development.config.php');
+}
+$app = Application::init($appConfig);
 $sm         = $app->getServiceManager();
 
-use Zend\ServiceManager\ServiceManager;
+$db_config = new Zend\Config\Config(include 'config/autoload/db.local.php');
 
-class Migrator extends \Application\Services\BaseService {
 
+class Migrator extends \Application\Services\BaseService
+{
     private $config;
     private $arg;
+    private $migrationPath = 'migrations';
 
-    public function __construct($c, $a,  ServiceManager $sm){
+    public function __construct($c, $a, ServiceManager $sm)
+    {
         $this->config = $c;
         $this->arg    = $a;
         $this->sm     = $sm;
+        if (!file_exists($this->migrationPath)) {
+            mkdir($this->migrationPath, 0777, true);
+        }
     }
 
     public function run() {
         //avoid notice message
-        $command  = isset($this->arg[1]) ? $this->arg[1] : 'none';
-        $arg      = isset($this->arg[2]) ? $this->arg[2] : '';
-        $work     = isset($this->arg[3]) ? $this->arg[3] : '';
+        $command = isset($this->arg[1]) ? $this->arg[1] : 'none';
+        $arg     = isset($this->arg[2]) ? $this->arg[2] : '';
+        $work    = isset($this->arg[3]) ? $this->arg[3] : '';
 
-        switch ($command)
-        {
-            case 'create':   $this->createMigrationFile($arg);break;
-            case 'update':   $this->applyMigrations();break;
-            case 'install':  $this->createDb();break;
+        switch ($command) {
+            case 'create':
+                $this->createMigrationFile($arg);
+                break;
+            case 'update':
+                $this->applyMigrations();
+                break;
+            case 'install':
+                $this->createDb();
+                break;
             default :
                 $help_string = "Usage:\n\tcreate -> create a new migration file using update.sql \n";
                 $help_string .= "\tupdate -> apply migration(s) to DB\n";
@@ -42,6 +61,7 @@ class Migrator extends \Application\Services\BaseService {
 
     /**
      * Analys the update.sql generated from WorkBench and create a migration file in php
+     *
      * @param unknown $arg
      */
     private function createMigrationFile($arg) {
@@ -49,7 +69,6 @@ class Migrator extends \Application\Services\BaseService {
         $main_queries              = $arg != 'empty' ? $queries['main'] : '';
         $workgroup_queries         = $arg != 'empty' ? $queries['workgroup'] : '';
         $permq                     = $arg != 'empty' ? $queries['permission'] : '';
-
         $version                   = date('YmdHis');
 
         $content = "<?php return array(
@@ -88,14 +107,10 @@ class Migrator extends \Application\Services\BaseService {
                     	}
 	               );";
 
-        file_put_contents("migrations/migration_$version.php", $content);
-
-        if($permq){
-            file_put_contents('startdata.sql', $permq, FILE_APPEND);
-        }
-
-        $this->slog("Migration created: migrations/migration_$version.php");
+        file_put_contents($this->migrationPath . "/migration_$version.php", $content);
+        $this->slog("Migration created: " . $this->migrationPath . "/migration_$version.php");
     }
+
 
 
 
@@ -110,11 +125,10 @@ class Migrator extends \Application\Services\BaseService {
 
         //put file in alphabethical order
         sort($migrations);
-        foreach ($migrations as $migration)
-        {
-            $migration_data    = include $migration;
-            $version 		    = $migration_data['version'];
-            if(!is_numeric($version)) continue;
+        foreach ($migrations as $migration) {
+            $migration_data = include $migration;
+            $version        = $migration_data['version'];
+            if (!is_numeric($version)) continue;
 
             $pre_fun           = isset($migration_data['pre_function']) ? $migration_data['pre_function'] : null;
             $main_queries      = str_replace('`main`.', '`'.$prefix.'_main`.', $migration_data['main']);

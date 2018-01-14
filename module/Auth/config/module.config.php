@@ -25,9 +25,9 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => function($sl) {
-                return new IndexController($sl->get('AuthService'));
-            }
+//            Controller\IndexController::class => function($sl) {
+//                return new IndexController($sl->get('AuthService'));
+//            }
         ],
     ],
     'view_manager' => [

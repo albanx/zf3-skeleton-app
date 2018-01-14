@@ -11,3 +11,4 @@ vendor/
 composer.phar
 config/development.config.php
 phpunit.xml
+data/cache/
